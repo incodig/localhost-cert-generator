@@ -48,10 +48,11 @@ jobs:
 
       - name: Sign the Docker Image with Cosign
         env:
+          COSIGN_YES: "true"
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
         run: |
           echo "${{ secrets.COSIGN_PRIVATE_KEY }}" > cosign.key
-          cosign sign --key cosign.key docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:latest
+          cosign sign --key cosign.key docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}@$(docker buildx imagetools inspect --format '{{.Digest}}' docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:latest)
 
       - name: Verify Image Signature
         run: |
