@@ -1,5 +1,5 @@
 # Docker Image Name
-IMAGE_NAME=localhost-ssl
+IMAGE_NAME=incodig/localhost-cert-generator:latest
 
 CERTS_DIR=certs
 CA_NAME=localhost
@@ -22,11 +22,6 @@ install: clean install-ca ## Install CA on the system
 
 machine: ## Detects the operating system
 	@echo $(OS)
-
-# Build Docker image for certificate generation
-build: ## Builds Docker image to generate certificates
-	@echo "Building Docker image..."
-	docker build -t $(IMAGE_NAME) .
 
 # Run Docker container to generate SSL certificates
 run: ## Generates SSL certificates and places them in the 'certs/' folder
