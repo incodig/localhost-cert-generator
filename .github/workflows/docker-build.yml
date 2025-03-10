@@ -40,6 +40,12 @@ jobs:
             docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:${{ github.sha }}
           platforms: linux/amd64,linux/arm64
 
+      - name: Get Image Digest
+        id: get_digest
+        run: |
+          DIGEST=$(docker buildx imagetools inspect docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:latest --format '{{ json .Manifest.Digest }}' | tr -d '"')
+          echo "IMAGE_DIGEST=$DIGEST" >> $GITHUB_ENV
+
       - name: Install Cosign
         run: |
           curl -Lo cosign https://github.com/sigstore/cosign/releases/latest/download/cosign-linux-amd64
@@ -52,8 +58,8 @@ jobs:
           COSIGN_PASSWORD: ${{ secrets.COSIGN_PASSWORD }}
         run: |
           echo "${{ secrets.COSIGN_PRIVATE_KEY }}" > cosign.key
-          cosign sign --key cosign.key docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}@$(docker buildx imagetools inspect --format '{{.Digest}}' docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:latest)
+          cosign sign --key cosign.key docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}@${{ env.IMAGE_DIGEST }}
 
       - name: Verify Image Signature
         run: |
-          cosign verify docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}:latest
+          cosign verify docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}@${{ env.IMAGE_DIGEST }}
