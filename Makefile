@@ -16,7 +16,7 @@ help: ## Lists all available commands in the Makefile
 
 .DEFAULT_GOAL := help
 
-generate-install: run clean install-ca ## Generates certificates and installs CA on the system
+generate-install: clean run install-ca ## Generates certificates and installs CA on the system
 
 install: clean install-ca ## Install CA on the system
 
@@ -86,4 +86,4 @@ endif
 	@echo "Removal completed!"
 
 # Generate certificates and install CA automatically
-all: build run install-ca ## Generates image, certificates and installs CA on the system
+all: run install-ca ## Generates image, certificates and installs CA on the system
