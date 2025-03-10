@@ -61,5 +61,11 @@ jobs:
           cosign sign --key cosign.key docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}@${{ env.IMAGE_DIGEST }}
 
       - name: Verify Image Signature
+        env:
+          COSIGN_YES: "true"
         run: |
-          cosign verify docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}@${{ env.IMAGE_DIGEST }}
+          cosign verify \
+            --certificate-identity "https://github.com/${{ github.repository }}/.github/workflows/docker-build.yml@refs/heads/main" \
+            --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+            docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ env.REPO_NAME }}@${{ env.IMAGE_DIGEST }}
+
